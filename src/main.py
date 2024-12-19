@@ -1,5 +1,9 @@
-from src.controller import compress
+from src.plot import draw_plot
 
-arr = ["big", "medium", "small"]
+PHOTO_SIZE = "medium"
+FAST_MODE  = True
+TYPES = ["psnr", "ssim"]
 
-compress(8, 15, 100, "medium", True)
+if __name__ == "__main__":
+    for t in TYPES:
+        draw_plot(t, PHOTO_SIZE, FAST_MODE)
