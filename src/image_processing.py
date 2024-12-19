@@ -1,7 +1,7 @@
 import numpy as np
 from dct import dct2, idct2
 
-def apply_dct_to_image(image, block_size):
+def apply_dct_to_image(image, block_size, fast_mode):
     h, w, _ = image.shape
     dct_image = np.zeros_like(image, dtype=float)
 
@@ -10,11 +10,11 @@ def apply_dct_to_image(image, block_size):
             for k in range(3):  # Apply DCT to each color channel
                 block = image[i:i + block_size, j:j + block_size, k]
                 if block.shape == (block_size, block_size):
-                    dct_image[i:i + block_size, j:j + block_size, k] = dct2(block)
+                    dct_image[i:i + block_size, j:j + block_size, k] = dct2(block, fast_mode)
 
     return dct_image
 
-def apply_idct_to_image(dct_image, block_size):
+def apply_idct_to_image(dct_image, block_size, fast_mode):
     h, w, _ = dct_image.shape
     image = np.zeros_like(dct_image, dtype=float)
 
@@ -23,7 +23,7 @@ def apply_idct_to_image(dct_image, block_size):
             for k in range(3):  # Apply IDCT to each color channel
                 block = dct_image[i:i + block_size, j:j + block_size, k]
                 if block.shape == (block_size, block_size):
-                    image[i:i + block_size, j:j + block_size, k] = idct2(block)
+                    image[i:i + block_size, j:j + block_size, k] = idct2(block, fast_mode)
 
     return image
 

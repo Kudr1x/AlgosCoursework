@@ -3,38 +3,40 @@ import numpy as np
 from skimage.metrics import peak_signal_noise_ratio as psnr, structural_similarity as ssim
 
 from src.image_processing import apply_dct_to_image, zero_blocks, quantize_blocks, apply_idct_to_image
+from src.utils import pad_image
 
-def start(block_size, num_zeros, quant):
-    image_path = '/home/kudrix/PycharmProjects/AlgosCoursework/image/input.png'
-    image = Image.open(image_path)
+
+def compress(block_size, num_zeros, quant, size, fast_mode):
+    image_path = f'/home/kudrix/PycharmProjects/AlgosCoursework/image/{size}/input.png'
+    image = pad_image(Image.open(image_path), block_size)
     image_np = np.array(image)
 
     # Apply DCT
-    dct_image = apply_dct_to_image(image_np, block_size)
+    dct_image = apply_dct_to_image(image_np, block_size, fast_mode)
 
     zeroed_image_pil = Image.fromarray(np.uint8(dct_image))
-    zeroed_image_pil.save('/home/kudrix/PycharmProjects/AlgosCoursework/image/dct_output.png')
+    zeroed_image_pil.save(f'/home/kudrix/PycharmProjects/AlgosCoursework/image/{size}/dct_output.png')
 
     # Zero blocks
     zeroed_dct_image = zero_blocks(dct_image.copy(), block_size, num_zeros)
 
     # Save zeroed image
     zeroed_image_pil = Image.fromarray(np.uint8(zeroed_dct_image))
-    zeroed_image_pil.save('/home/kudrix/PycharmProjects/AlgosCoursework/image/zeroed_output.png')
+    zeroed_image_pil.save(f'/home/kudrix/PycharmProjects/AlgosCoursework/image/{size}/zeroed_output.png')
 
     # Quantize blocks
     quantized_dct_image = quantize_blocks(zeroed_dct_image, block_size, quant)
 
     # Save quantized image
     quantized_image_pil = Image.fromarray(np.uint8(quantized_dct_image))
-    quantized_image_pil.save('/home/kudrix/PycharmProjects/AlgosCoursework/image/quantized_output.png')
+    quantized_image_pil.save(f'/home/kudrix/PycharmProjects/AlgosCoursework/image/{size}/quantized_output.png')
 
     # Apply IDCT
-    reconstructed_image = apply_idct_to_image(quantized_dct_image, block_size)
+    reconstructed_image = apply_idct_to_image(quantized_dct_image, block_size, fast_mode)
 
     # Save reconstructed image
     reconstructed_image_pil = Image.fromarray(np.uint8(reconstructed_image))
-    reconstructed_image_pil.save('/home/kudrix/PycharmProjects/AlgosCoursework/image/reconstructed_output.png')
+    reconstructed_image_pil.save(f'/home/kudrix/PycharmProjects/AlgosCoursework/image/{size}/reconstructed_output.png')
 
     # Calculate PSNR and SSIM
     original_image_np = np.array(image)
